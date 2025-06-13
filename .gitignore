@@ -72,3 +72,6 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+Content/Halloween_Pumpkins/Textures/T_Grass_BC.uasset
+Content/Halloween_Pumpkins/Textures/T_Ground_N.uasset
+Content/Halloween_Pumpkins/Textures/T_Ground_BC.uasset
