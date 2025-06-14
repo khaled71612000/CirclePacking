@@ -35,7 +35,15 @@ void ACirclePackingManager::Tick(float DeltaTime)
 
     for (int32 i = 0; i < Circles.Num(); ++i)
     {
-        auto& Circle = Circles[i];
+        FCircleData& Circle = Circles[i];
+
+        /*Grows toward its target size(like a balloon inflating).
+
+        Gets older.
+
+        Its 3D mesh is scaled and positioned in the world.
+
+        Its glow(emissive)*/
 
         // Grow
         if (Circle.Radius < Circle.TargetRadius)
@@ -77,20 +85,29 @@ void ACirclePackingManager::Tick(float DeltaTime)
 
 bool ACirclePackingManager::IsOverlapping(const FVector2D& Pos, float Radius) const
 {
-for (const auto& Other : Circles)
-    {
-        float DistSq = FVector2D::DistSquared(Other.Position, Pos);
-        float MinDist = Radius + Other.TargetRadius;
-        if (DistSq < MinDist * MinDist)
-            return true;
-    }
+	for (const FCircleData& Other : Circles)
+	{
+        //Measure how far it is from the new circle
+		float DistSq = FVector2D::DistSquared(Other.Position, Pos);
+        //If distance < (both radii added together): they touch → return true.
+		float MinDist = Radius + Other.TargetRadius;
+		if (DistSq < MinDist * MinDist)
+			return true;
+	}
     return false;
 }
 
 void ACirclePackingManager::TrySpawnNewCircle()
 {
+	/*Try MaxAttempts times:
+	-Pick a random position inside the box.
+		- Choose a random size(mostly small).
+		- If it doesn’t touch any other circle(IsOverlapping is false) :
+		→ Save it.
+		→ Stop trying.*/
+
     const int32 MaxAttempts = 500;
-    for (int i = 0; i < MaxAttempts; ++i)
+    for (int32 i = 0; i < MaxAttempts; ++i)
     {
         FVector2D TryPos = FVector2D(
             FMath::FRandRange(-CanvasSize, CanvasSize),

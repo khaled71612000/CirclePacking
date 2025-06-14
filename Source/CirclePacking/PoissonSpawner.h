@@ -19,7 +19,7 @@ protected:
     float Radius = 300.f;
 
     UPROPERTY(EditAnywhere)
-    int32 K = 30;
+    int32 K = 300;
 
     UPROPERTY(EditAnywhere)
     float CellSize = 0.f;
