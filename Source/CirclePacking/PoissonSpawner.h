@@ -16,16 +16,16 @@ protected:
     virtual void BeginPlay() override;
 
     UPROPERTY(EditAnywhere)
-    float Radius = 300.f;
+    float Radius = 200.f;
 
     UPROPERTY(EditAnywhere)
-    int32 K = 300;
+    int32 K = 30;
 
     UPROPERTY(EditAnywhere)
     float CellSize = 0.f;
 
     UPROPERTY(EditAnywhere)
-    float ChunkSize = 3000.f;
+    float ChunkSize = 2000.f;
 
     UPROPERTY(EditAnywhere)
     UMaterialInstance* MaterialInstance;

@@ -38,6 +38,8 @@ void APoissonSpawner::BeginPlay()
     }
 
     WorldCenter = FVector2D(GetActorLocation().X, GetActorLocation().Y);
+    //STEP 0
+
     // Each cell on the 2D grid can store only one point max. To avoid overlap,
     // cell size ≈ radius / √2 ensures points in neighboring cells won't be too close.
     // If we simply use CellSize = Radius, then a point in one cell could still be too close to a point in a diagonal cel
@@ -47,7 +49,7 @@ void APoissonSpawner::BeginPlay()
     //├─────┼─────┤
     //│  ?  │ B   │
     //└─────┴─────┘
-    // If A and B are in diagonal cells, they’re r = √2 × CellSize apart as thats the square diagonal
+    // If A and B are in diagonal cells, they’re r = √2 × CellSize apart as thats the square diagonal as 2 is n which is the dimension we are working on
     CellSize = Radius / FMath::Sqrt(2.0f);
 
     //Imagine placing flags on a chessboard around the middle square. Each flag is a potential starting point for new trees.
@@ -60,22 +62,45 @@ void APoissonSpawner::BeginPlay()
 
 	Each point is also stored in a 2D grid(like putting it on a map).*/
 
-    for (int32 dx = -SeedRange; dx <= SeedRange; ++dx)
-    {
-        for (int32 dy = -SeedRange; dy <= SeedRange; ++dy)
-        {
-            FVector2D Seed = WorldCenter + FVector2D(dx * SeedSpacing, dy * SeedSpacing);
-            AddSample(Seed);
-            ActiveList.Add(Seed);
-            //Because we want to quickly and efficiently check nearby points during spawning
-            //without scanning the entire list of samples.
-            //It converts the real-world coordinates like X = 243, Y = 510
-            // Into a grid index like(5, 10) — like finding the square on a chessboard
+    //STEP 1
+    //for (int32 dx = -SeedRange; dx <= SeedRange; ++dx)
+    //{
+    //    for (int32 dy = -SeedRange; dy <= SeedRange; ++dy)
+    //    {
+    //        FVector2D Seed = WorldCenter + FVector2D(dx * SeedSpacing, dy * SeedSpacing);
+    //        AddSample(Seed);
+    //        ActiveList.Add(Seed);
+    //        //Because we want to quickly and efficiently check nearby points during spawning
+    //        //without scanning the entire list of samples.
+    //        //It converts the real-world coordinates like X = 243, Y = 510
+    //        // Into a grid index like(5, 10) — like finding the square on a chessboard
+    //        // avoid quad trees and O(N)
+    //        FIntPoint GridKey = FIntPoint(Seed.X / CellSize, Seed.Y / CellSize);
+    //        Grid.Add(GridKey, Seed);
+    //    }
+    //}
 
-            FIntPoint GridKey = FIntPoint(Seed.X / CellSize, Seed.Y / CellSize);
-            Grid.Add(GridKey, Seed);
-        }
+    // (edge-based spawning) to spawn from 4 edges of square to center
+    const float Edge = ChunkSize;
+    for (float t = 0; t < 1.0f; t += 0.05f)
+    {
+        // Top
+        FVector2D Top(WorldCenter.X + FMath::Lerp(-Edge, Edge, t), WorldCenter.Y + Edge);
+        AddSample(Top); ActiveList.Add(Top); Grid.Add(FIntPoint(Top.X / CellSize, Top.Y / CellSize), Top);
+
+        //// Bottom
+        //FVector2D Bottom(WorldCenter.X + FMath::Lerp(-Edge, Edge, t), WorldCenter.Y - Edge);
+        //AddSample(Bottom); ActiveList.Add(Bottom); Grid.Add(FIntPoint(Bottom.X / CellSize, Bottom.Y / CellSize), Bottom);
+
+        //// Left
+        //FVector2D Left(WorldCenter.X - Edge, WorldCenter.Y + FMath::Lerp(-Edge, Edge, t));
+        //AddSample(Left); ActiveList.Add(Left); Grid.Add(FIntPoint(Left.X / CellSize, Left.Y / CellSize), Left);
+
+        //// Right
+        //FVector2D Right(WorldCenter.X + Edge, WorldCenter.Y + FMath::Lerp(-Edge, Edge, t));
+        //AddSample(Right); ActiveList.Add(Right); Grid.Add(FIntPoint(Right.X / CellSize, Right.Y / CellSize), Right);
     }
+
 }
 
 void APoissonSpawner::Tick(float DeltaTime)
@@ -145,6 +170,7 @@ bool APoissonSpawner::IsInNeighborhood(const FVector2D& Point)
     FIntPoint GridPos(Point.X / CellSize, Point.Y / CellSize);
     
     //Looks at the 25 nearby grid cells around it.
+    // only ones worth checking is near grid not the edges of grid
     for (int32 dx = -5; dx <= 5; ++dx)
     {
         for (int32 dy = -5; dy <= 5; ++dy)
@@ -173,6 +199,8 @@ void APoissonSpawner::GenerateNextPoints()
     //Try K amount of times to find a new angle and distance and make sure its a good point
     for (int32 i = 0; i < K; ++i)
     {
+        //STEP 2
+        //between 0 to 360 find an angle and get cose and sine or just a random 2d vector func and set its mag to R + point location
         float Angle = FMath::RandRange(0.f, 2 * PI);
         //“You can plant a new tree anywhere 1–2 meters from this one.”
         float R = FMath::FRandRange(Radius, 2 * Radius);
