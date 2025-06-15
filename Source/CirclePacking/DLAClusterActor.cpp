@@ -141,9 +141,9 @@ void ADLAClusterActor::SimulateStep()
             //Walker.Position[Axis] += Step;
 
             // --- Pure 3D Random Walk (Brownian Motion) ---
-            Walker.Position.X += FMath::RandRange(-1, 1);
-            Walker.Position.Y += FMath::RandRange(-1, 1);
-            Walker.Position.Z += FMath::RandRange(-1, 1);
+			Walker.Position.X += FMath::RandRange(-1, 1);
+			Walker.Position.Y += FMath::RandRange(-1, 1);
+			Walker.Position.Z += FMath::RandRange(-1, 1);
 
 
             // Check if this walker is adjacent to any point in the aggregate
