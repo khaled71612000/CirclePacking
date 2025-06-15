@@ -31,7 +31,15 @@ void ADLAClusterActor::BeginPlay()
 
     FVector Center = GetActorLocation();
     FVector Extent = FVector(Bounds) * GridSpacing;
-    DrawDebugBox(GetWorld(), Center, Extent, FColor::Green, true, -1, 0, 5.0f); // Thick green box
+    //DrawDebugBox(GetWorld(), Center, Extent, FColor::Green, true, -1, 0, 5.0f); // Thick green box
+
+    if (UStaticMesh* Mesh = MeshComponent->GetStaticMesh())
+    {
+        FBox Box = Mesh->GetBoundingBox();
+        float Diagonal = Box.GetSize().Size(); 
+
+        GridSpacing = Diagonal * 0.28f;
+    }
 }
 
 void ADLAClusterActor::Tick(float DeltaTime)
@@ -43,7 +51,7 @@ void ADLAClusterActor::Tick(float DeltaTime)
     for (const FWalker& Walker : Walkers)
     {
         FVector WorldPos = GetActorLocation() + FVector(Walker.Position) * GridSpacing;
-        DrawDebugPoint(GetWorld(), WorldPos, 10.0f, FColor::Red, false, -1.0f, 0);
+        //DrawDebugPoint(GetWorld(), WorldPos, 10.0f, FColor::Red, false, -1.0f, 0);
     }
 
 	TimeAccumulator += DeltaTime;
@@ -58,6 +66,17 @@ void ADLAClusterActor::Tick(float DeltaTime)
 
 void ADLAClusterActor::SimulateStep()
 {
+    // Gradually reduce the number of active walkers over time to simulate slowing coral growth.
+    // For every 20 simulation steps, reduce the walker count by 1.
+    // Clamp to a minimum of 5 walkers to prevent growth from stalling completely.
+    ++StepCount;
+    int32 TargetWalkerCount = FMath::Max(5, MaxWalkers - StepCount / 90);
+    if (Walkers.Num() > TargetWalkerCount)
+    {
+        //No new walkers are added anymore, the pool just shrinks as the sim matures.
+        Walkers.SetNum(TargetWalkerCount);
+    }
+
     // Store positions to add to the crystal later
     TArray<FIntVector> PointsToAdd;
 
@@ -187,8 +206,14 @@ FIntVector ADLAClusterActor::GetRandomEdgePosition() const
 void ADLAClusterActor::AddInstanceToMesh(const FIntVector& Pos)
 {
     FVector Location = FVector(Pos) * GridSpacing;
-    FTransform InstanceTransform;
-    InstanceTransform.SetLocation(Location);
+
+    FRotator RandomRot = FRotator(
+        FMath::RandRange(0.f, 360.f), // Pitch
+        FMath::RandRange(0.f, 360.f), // Yaw
+        FMath::RandRange(0.f, 360.f)  // Roll
+    );
+
+    FTransform InstanceTransform(RandomRot, Location);
     MeshComponent->AddInstance(InstanceTransform);
 
     UStaticMesh* Mesh = MeshComponent->GetStaticMesh();
@@ -199,8 +224,9 @@ void ADLAClusterActor::AddInstanceToMesh(const FIntVector& Pos)
         HalfHeight = Box.GetExtent().Z;
     }
 
-    FVector Adjusted = Location + FVector(0, 0, HalfHeight);
-    FVector WorldPos = MeshComponent->GetComponentTransform().TransformPosition(Adjusted);
+    //FVector MeshCenterOffset(0, 0, HalfHeight);
+    //FVector RotatedOffset = RandomRot.RotateVector(MeshCenterOffset);
+    //FVector WorldPos = MeshComponent->GetComponentTransform().TransformPosition(Location + RotatedOffset);
 
-    DrawDebugSphere(GetWorld(), WorldPos, 55.0f, 12, FColor::Yellow, false, 3.0f);
+	//DrawDebugSphere(GetWorld(), WorldPos, 45.0f, 12, FColor::Yellow, false, 1.0f);
 }

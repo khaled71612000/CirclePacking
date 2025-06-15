@@ -62,4 +62,6 @@ private:
     float TimeAccumulator = 0.f;
 	UPROPERTY(EditAnywhere)
 	float SimulationStepRate = 0.1f;
+
+    int32 StepCount = 0;
 };
