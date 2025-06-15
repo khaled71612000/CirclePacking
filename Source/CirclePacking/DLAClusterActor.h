@@ -64,4 +64,9 @@ private:
 	float SimulationStepRate = 0.1f;
 
     int32 StepCount = 0;
+
+    TMap<int32, float> GrowingInstances;
+
+	UPROPERTY(EditAnywhere)
+	float GrowthDuration = 0.5f;
 };

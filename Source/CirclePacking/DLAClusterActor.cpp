@@ -62,6 +62,35 @@ void ADLAClusterActor::Tick(float DeltaTime)
 
     SimulateStep();
 
+    TArray<int32> Completed;
+
+    for (auto& Pair : GrowingInstances)
+    {
+        int32 Index = Pair.Key;
+        float& Time = Pair.Value;
+        Time += DeltaTime;
+
+        float Alpha = FMath::Clamp(Time / GrowthDuration, 0.f, 1.f);
+        FVector Scale = FMath::Lerp(FVector::ZeroVector, FVector(1.f), Alpha);
+
+        FTransform InstanceTransform;
+        if (MeshComponent->GetInstanceTransform(Index, InstanceTransform, true))
+        {
+            InstanceTransform.SetScale3D(Scale);
+            MeshComponent->UpdateInstanceTransform(Index, InstanceTransform, true, true, true);
+        }
+
+        if (Alpha >= 1.f)
+        {
+            Completed.Add(Index);
+        }
+    }
+
+    for (int32 Index : Completed)
+    {
+        GrowingInstances.Remove(Index);
+    }
+
 }
 
 void ADLAClusterActor::SimulateStep()
@@ -213,9 +242,6 @@ void ADLAClusterActor::AddInstanceToMesh(const FIntVector& Pos)
         FMath::RandRange(0.f, 360.f)  // Roll
     );
 
-    FTransform InstanceTransform(RandomRot, Location);
-    MeshComponent->AddInstance(InstanceTransform);
-
     UStaticMesh* Mesh = MeshComponent->GetStaticMesh();
     float HalfHeight = 50.0f;
     if (Mesh)
@@ -223,6 +249,9 @@ void ADLAClusterActor::AddInstanceToMesh(const FIntVector& Pos)
         FBox Box = Mesh->GetBoundingBox();
         HalfHeight = Box.GetExtent().Z;
     }
+
+    int32 InstanceIndex = MeshComponent->AddInstance(FTransform(RandomRot, Location, FVector::ZeroVector));
+    GrowingInstances.Add(InstanceIndex, 0.0f);
 
     //FVector MeshCenterOffset(0, 0, HalfHeight);
     //FVector RotatedOffset = RandomRot.RotateVector(MeshCenterOffset);
