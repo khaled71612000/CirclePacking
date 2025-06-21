@@ -1,0 +1,82 @@
+# Procedural Visual Systems in Unreal Engine
+
+## Overview
+This project implements several procedural generation techniques using Unreal Engine 5. Each system is visualized in real time through instanced meshes, glowing materials, and evolving geometry. The goal is to make algorithmic beauty both interactive and practical — from data visualization to gameplay tools.
+
+---
+
+## Systems & Classes
+
+### 🌀 APrimeSpiralActor
+Visualizes the **Ulam Spiral**, where prime numbers are plotted in a spiral pattern on a 2D grid.
+
+**Key Methods:**
+- `Tick()`: Spawns and scales each prime-number cube in sequence.
+- `IsPrime(int32 Number)`: Determines if a number is prime.
+- `GetUlamSpiralPosition(int32 Index)`: Calculates the spiral position of an index.
+
+**Use Case:**
+- Prime-based puzzles, number visualizations, or visual encoding of index-based systems.
+
+---
+
+### 🌿 APoissonSpawner
+Implements **Poisson Disc Sampling**, generating a natural, non-overlapping distribution of objects across a plane.
+
+**Key Methods:**
+- `BeginPlay()`: Seeds the grid with starter points.
+- `Tick()`: Iteratively spawns new points and instances.
+- `GenerateNextPoints()`: Samples candidates around existing points.
+- `IsInNeighborhood()`: Ensures spacing from neighbors.
+
+**Use Case:**
+- Forests, NPC camps, rock scatter, loot placement, or level layout zones with clean spacing.
+
+---
+
+### 🧬 ADLAClusterActor
+Simulates **Diffusion-Limited Aggregation (DLA)** — particles (walkers) move randomly and "stick" to form coral/crystal-like structures.
+
+**Key Methods:**
+- `SimulateStep()`: Runs a parallel simulation of walker movement.
+- `IsAdjacentToAggregate()`: Checks if a walker touches the existing cluster.
+- `AddInstanceToMesh()`: Adds a cube with scale growth animation.
+
+**Use Case:**
+- Procedural corruption, crystal growth, or visualizing biological processes.
+
+---
+
+### 🎈 ACirclePackingManager
+Generates **non-overlapping growing circles** that fill space organically.
+
+**Key Methods:**
+- `TrySpawnNewCircle()`: Picks random positions and sizes using exponential bias.
+- `IsOverlapping()`: Rejects circles that would collide with others.
+- `Tick()`: Grows, ages, and shades all circles using custom mesh data.
+
+**Use Case:**
+- UI layouts, spawn zone visualizers, abstract territory systems.
+
+---
+
+## Features
+
+- 🧠 **Procedural Algorithms** – Powered by math, visualized through Unreal Engine
+- ⚙️ **Instanced Static Meshes** – Optimized performance for high counts
+- 🔁 **Real-Time Simulation** – Every system runs live during gameplay
+- 🌈 **Dynamic Visual Feedback** – Glow, scale, and debug visuals make logic visible
+- 🛠️ **Fully Modular** – Drop any class into a scene to test or extend it
+
+---
+
+## References & Credits
+This project is based on well-established mathematical and visual research:
+- 🔵 **Circle Packing** – [Wikipedia](https://en.wikipedia.org/wiki/Circle_packing)  
+- 🌿 **Poisson Disc Sampling** – [Jason Davies' demo](https://www.jasondavies.com/poisson-disc/)  
+- 🧬 **Diffusion-Limited Aggregation (DLA)** – [Paul Bourke’s primer](https://paulbourke.net/fractals/dla/)  
+- 🧮 **Ulam Spiral** – [JSTOR: Ulam's Original Paper](https://www.jstor.org/stable/2314055?origin=crossref)  
+- 📚 **Mathematical Games Column (1964)** – [Scientific American](https://www.scientificamerican.com/article/mathematical-games-1964-03/)
+
+
+Special thanks to the Unreal Engine community and procedural generation research.
