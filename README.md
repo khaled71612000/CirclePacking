@@ -12,11 +12,13 @@ This project implements several procedural generation techniques using Unreal En
 
 ### 🌀 APrimeSpiralActor
 Visualizes the **Ulam Spiral**, where prime numbers are plotted in a spiral pattern on a 2D grid.
+![Youtube](https://youtu.be/HSi5PujFJeQ?si=QN9bC4YaNrDNks6_)
 
 **Key Methods:**
 - `Tick()`: Spawns and scales each prime-number cube in sequence.
 - `IsPrime(int32 Number)`: Determines if a number is prime.
 - `GetUlamSpiralPosition(int32 Index)`: Calculates the spiral position of an index.
+
 
 **Use Case:**
 - Prime-based puzzles, number visualizations, or visual encoding of index-based systems.
@@ -25,6 +27,7 @@ Visualizes the **Ulam Spiral**, where prime numbers are plotted in a spiral patt
 
 ### 🌿 APoissonSpawner
 Implements **Poisson Disc Sampling**, generating a natural, non-overlapping distribution of objects across a plane.
+![Youtube](https://youtu.be/AqyTtPGKBjc?si=Eb0MLUgSW7lzCm9e)
 
 **Key Methods:**
 - `BeginPlay()`: Seeds the grid with starter points.
@@ -39,6 +42,7 @@ Implements **Poisson Disc Sampling**, generating a natural, non-overlapping dist
 
 ### 🧬 ADLAClusterActor
 Simulates **Diffusion-Limited Aggregation (DLA)** — particles (walkers) move randomly and "stick" to form coral/crystal-like structures.
+![Youtube](https://youtu.be/Y16Zl75pgoI?si=GtO5hb0ysynVB6_0)
 
 **Key Methods:**
 - `SimulateStep()`: Runs a parallel simulation of walker movement.
@@ -52,6 +56,7 @@ Simulates **Diffusion-Limited Aggregation (DLA)** — particles (walkers) move r
 
 ### 🎈 ACirclePackingManager
 Generates **non-overlapping growing circles** that fill space organically.
+![Youtube](https://youtu.be/tIiBak3cNtk?si=BCBtOcw72ykh53GJ)
 
 **Key Methods:**
 - `TrySpawnNewCircle()`: Picks random positions and sizes using exponential bias.
